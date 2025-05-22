@@ -2,7 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const { checkAndUpdatePayments } = require('./checkPayments');
 
-const TELEGRAM_BOT_TOKEN = 'توکن ربات تلگرام خودت را اینجا بگذار';
+const TELEGRAM_BOT_TOKEN = '8188368185:AAG2wBXhPviV1xi1-RSMp2BSAfcrUE6I7Do';
 
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
