@@ -7,7 +7,7 @@ const {
   markAccountAsUsed
 } = require('./db');
 
-const TELEGRAM_BOT_TOKEN = 'توکن ربات تلگرام خودت را اینجا بگذار';
+const TELEGRAM_BOT_TOKEN = '8188368185:AAG2wBXhPviV1xi1-RSMp2BSAfcrUE6I7Do';
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
 
 async function checkAndUpdatePayments() {
