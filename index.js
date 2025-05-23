@@ -1,40 +1,32 @@
-import { Telegraf } from 'telegraf';
-import Database from 'better-sqlite3';
-import dotenv from 'dotenv';
-dotenv.config();
+const { Telegraf } = require('telegraf');
+const express = require('express');
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+// تنظیمات ربات
+const BOT_TOKEN = process.env.BOT_TOKEN || '8038925678:AAG4rhHxVOgp2fiRFFUF3QF7Av50cFNKfXE'; // توکن خودتو وارد کن اگه از ENV استفاده نمی‌کنی
+const bot = new Telegraf(BOT_TOKEN);
 
-// DB setup
-const db = new Database('signals.db');
+// فرمان‌های ربات
+bot.start((ctx) => ctx.reply('سلام فرنام! ربات روشنه ✅'));
+bot.help((ctx) => ctx.reply('از دستور /start استفاده کن برای شروع.'));
 
-// Create table if not exists
-db.exec(`
-  CREATE TABLE IF NOT EXISTS signals (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    symbol TEXT,
-    signal TEXT,
-    score REAL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+bot.command('ping', (ctx) => ctx.reply('pong 🏓'));
 
-// Example command
-bot.command('start', ctx => {
-  ctx.reply('ربات سیگنال طلا فعال است!');
+// راه‌اندازی ربات با polling
+bot.launch();
+console.log('🤖 ربات با polling راه‌اندازی شد.');
+
+// پورت ساختگی برای Render (اجباری!)
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+  res.send('ربات روشنه و با polling کار می‌کنه ✅');
 });
 
-// Example sending last signal
-bot.command('signal', ctx => {
-  const row = db.prepare('SELECT * FROM signals ORDER BY created_at DESC LIMIT 1').get();
-  if (row) {
-    ctx.reply(`📈 سیگنال اخیر برای ${row.symbol}:\n\n🔔 ${row.signal} (امتیاز: ${row.score})`);
-  } else {
-    ctx.reply('هنوز هیچ سیگنالی ثبت نشده.');
-  }
+app.listen(PORT, () => {
+  console.log(`🌐 Server listening on port ${PORT}`);
 });
 
-// Launch bot
-bot.launch().then(() => {
-  console.log('📡 Bot is running...');
-});
+// جلوگیری از بسته شدن با CTRL+C
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
