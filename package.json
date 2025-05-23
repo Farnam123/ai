@@ -1,19 +1,16 @@
 {
   "name": "gold-signal-bot",
   "version": "1.0.0",
-  "description": "Telegram bot for sending gold trading signals",
+  "description": "Gold signal bot for Telegram",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "engines": {
-    "node": "20.x"
-  },
+  "author": "Farnam",
+  "license": "MIT",
   "dependencies": {
-    "better-sqlite3": "^8.0.1",
-    "node-fetch": "^3.3.2",
-    "telegraf": "^4.16.2",
+    "telegraf": "^4.12.2",
+    "axios": "^1.6.8",
     "dotenv": "^16.3.1"
-  },
-  "type": "module"
+  }
 }
