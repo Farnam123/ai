@@ -1,30 +1,40 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const { createOrder } = require('./db');
+import { Telegraf } from 'telegraf';
+import Database from 'better-sqlite3';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const app = express();
-app.use(bodyParser.json());
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
-const USDT_ADDRESS = 'TSHdYVszpLUeNhtYU6VSqZBo4n246h7Ee6';
+// DB setup
+const db = new Database('signals.db');
 
-app.post('/order', (req, res) => {
-  const { telegram_id, amount } = req.body;
+// Create table if not exists
+db.exec(`
+  CREATE TABLE IF NOT EXISTS signals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    symbol TEXT,
+    signal TEXT,
+    score REAL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
 
-  if (!telegram_id || !amount) {
-    return res.status(400).json({ error: 'telegram_id و amount باید ارسال شود' });
-  }
-
-  const orderId = createOrder(telegram_id, amount);
-
-  res.json({
-    message: 'سفارش ثبت شد',
-    orderId,
-    payTo: USDT_ADDRESS,
-    note: 'لطفاً دقیقاً مبلغ مورد نظر را به آدرس بالا واریز کرده و منتظر تأیید باشید.'
-  });
+// Example command
+bot.command('start', ctx => {
+  ctx.reply('ربات سیگنال طلا فعال است!');
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`سرور روی پورت ${PORT} در حال اجراست...`);
+// Example sending last signal
+bot.command('signal', ctx => {
+  const row = db.prepare('SELECT * FROM signals ORDER BY created_at DESC LIMIT 1').get();
+  if (row) {
+    ctx.reply(`📈 سیگنال اخیر برای ${row.symbol}:\n\n🔔 ${row.signal} (امتیاز: ${row.score})`);
+  } else {
+    ctx.reply('هنوز هیچ سیگنالی ثبت نشده.');
+  }
+});
+
+// Launch bot
+bot.launch().then(() => {
+  console.log('📡 Bot is running...');
 });
